@@ -1,6 +1,3 @@
-bin/WebAF
-bin/WebPay
-bin/WebPortal
 obj/
 source/
 *.*
