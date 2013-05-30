@@ -1,0 +1,14 @@
+bin/WebAF
+bin/WebPay
+bin/WebPortal
+obj/
+source/
+*.*
+!.gitignore
+!*.build
+!*.cwproj
+!*.dct
+!*.sln
+!*.apv
+!up_vcsettings.ini
+!CA_Roots.pem
