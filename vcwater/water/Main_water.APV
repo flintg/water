@@ -78,12 +78,12 @@ District                   LONG,NAME('wd') !Water district
 Division                   LONG,NAME('div') !Water division
 !!> GUID('b1a0de3c-1d2b-4589-b7ec-0780b5cb1cc9'),PROMPT('Division:'),HEADER('Division'),MESSAGE('Water division'),TOOLTIP('Water division'),PICTURE(@n-14),TYPEMODE(INS),JUSTIFY(RIGHT,1)
 [SCREENCONTROLS]
-! PROMPT('Name:'),USE(?Name:Prompt)
-! ENTRY(@s255),USE(Name)
+! PROMPT('District Name:'),USE(?DistrictName:Prompt)
+! ENTRY(@s255),USE(DistrictName)
 [REPORTCONTROLS]
-! STRING(@s255),USE(Name)
-Name                       STRING(256),NAME('waterDistrictName')
-!!> GUID('e5de2f57-68b8-4762-98ff-e901defb3d74'),PROMPT('Name:'),HEADER('Name'),PICTURE(@s255),TYPEMODE(INS)
+! STRING(@s255),USE(DistrictName)
+DistrictName               STRING(256),NAME('waterDistrictName')
+!!> GUID('e5de2f57-68b8-4762-98ff-e901defb3d74'),PROMPT('District Name:'),HEADER('District Name'),PICTURE(@s255),TYPEMODE(INS)
                          END
 !!> GUID('f788f1be-0371-4bf1-92ef-4dbe4788a039')
 [SCREENCONTROLS]
@@ -290,6 +290,20 @@ DataCount                  LONG,NAME('resultCount') !Transmission result count
 !!> GUID('59a25b5d-5826-4df9-96b2-3f5c5aeb5601'),PROMPT('Dat:'),HEADER('Dat'),MESSAGE('Transmission result count'),TOOLTIP('Transmission result count'),PICTURE(@n-14),TYPEMODE(INS),JUSTIFY(RIGHT,1)
                          END
 !!> GUID('ae01f54e-7d94-4e4b-92c8-422e0bd69dc3')
+[SCREENCONTROLS]
+! PROMPT('settings:'),USE(?settings:Prompt)
+! ENTRY(@s20),USE(settings),MSG('Settings BL object'),TIP('Settings BL object')
+[REPORTCONTROLS]
+! STRING(@s20),USE(settings)
+settings                 wtrSettingsBL !Settings BL object
+!!> GUID('5d9bd897-12db-40ec-8e50-9fbeadac6ce6'),PROMPT('settings:'),HEADER('settings'),MESSAGE('Settings BL object'),TOOLTIP('Settings BL object'),PICTURE(@s20),TYPEMODE(INS)
+[SCREENCONTROLS]
+! PROMPT('station List:'),USE(?stationList:Prompt)
+! ENTRY(@s20),USE(stationList),RIGHT(1),MSG('Reference to the list of saved stations'),TIP('Reference to the list of saved stations')
+[REPORTCONTROLS]
+! STRING(@s20),USE(stationList),RIGHT(1)
+stationList              &wtrStationQueue !Reference to the list of saved stations
+!!> GUID('315ac25b-0e8f-42fe-901c-68b831655e5b'),PROMPT('station List:'),HEADER('station List'),MESSAGE('Reference to the list of saved stations'),TOOLTIP('Reference to the list of saved stations'),PICTURE(@s20),TYPEMODE(INS)
 [PROMPTS]
 %Parameters DEFAULT  ('')
 %ReturnValue FIELD  ()
@@ -388,7 +402,8 @@ DataCount                  LONG,NAME('resultCount') !Transmission result count
 
 %ProcedureUserBindExpression DEPEND %ProcedureUserBindExpressions DEFAULT TIMES 0
 
-%ButtonAction DEPEND %Control DEFAULT TIMES 4
+%ButtonAction DEPEND %Control DEFAULT TIMES 5
+WHEN  ('?Add:Button') ('No Special Action')
 WHEN  ('?Data:Button') ('No Special Action')
 WHEN  ('?Dist:Button') ('No Special Action')
 WHEN  ('?Stations:Button') ('No Special Action')
@@ -402,7 +417,8 @@ WHEN  ('?Variables:Button') ('No Special Action')
 
 %ButtonThread DEPEND %Control LONG TIMES 0
 
-%ButtonThreadStack DEPEND %Control DEFAULT TIMES 4
+%ButtonThreadStack DEPEND %Control DEFAULT TIMES 5
+WHEN  ('?Add:Button') ('25000')
 WHEN  ('?Data:Button') ('25000')
 WHEN  ('?Dist:Button') ('25000')
 WHEN  ('?Stations:Button') ('25000')
@@ -414,7 +430,8 @@ WHEN  ('?Variables:Button') ('25000')
 
 %ButtonReturnValueReferenceAssign DEPEND %Control LONG TIMES 0
 
-%ButtonRequest DEPEND %Control DEFAULT TIMES 4
+%ButtonRequest DEPEND %Control DEFAULT TIMES 5
+WHEN  ('?Add:Button') ('None')
 WHEN  ('?Data:Button') ('None')
 WHEN  ('?Dist:Button') ('None')
 WHEN  ('?Stations:Button') ('None')
@@ -540,6 +557,17 @@ PROPERTY:END
 DO Get:ProvisionalData
 [END]
 [END]
+WHEN '?Add:Button'
+[INSTANCES]
+WHEN 'Accepted'
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+DO SaveToQueue
+[END]
+[END]
 [END]
 EMBED %ProcedureRoutines
 [DEFINITION]
@@ -603,7 +631,7 @@ i             LONG,AUTO
   LOOP i=1 TO RECORDS(Districts)
     GET(Districts, i)
     ASSERT(~ERRORCODE())
-    qContents.Append('<13,10>'&CLIP(Districts.Name))
+    qContents.Append('<13,10>'&CLIP(Districts.DistrictName))
   END
   SETCLIPBOARD(qContents.GetValue())
   MESSAGE(qContents.GetValue())
@@ -789,6 +817,36 @@ qContents       StringTheory
   SETCLIPBOARD(qContents.GetValue())
   MESSAGE(qContents.GetValue())
   EXIT
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+SaveToQueue ROUTINE
+!|
+!| Save the specified station to the station queue
+!|
+  DATA
+ptrStations LONG
+x           LONG
+  CODE
+  ptrStations = POINTER(Stations)
+  LOOP x=1 TO RECORDS(Stations)
+    GET(Stations,x)
+    ASSERT(~ERRORCODE())
+    IF CLIP(LEFT(UPPER(Stations.StationAbbreviation))) = CLIP(LEFT(UPPER(loc:StationAbbrev)))
+      CLEAR(stationList)
+      stationList.StationAbbr = CLIP(LEFT(Stations.StationAbbreviation))
+      stationList.StationName = CLIP(LEFT(Stations.StationName))
+      ADD(stationList)
+      IF ERRORCODE()
+        MESSAGE('Could not add record to station list.  Error ['&ERRORCODE()&'] '&ERROR(),'Error',ICON:Exclamation)
+      ELSE
+        MESSAGE('Station ['&stationList.StationAbbr&'] saved to favorites.')
+      END
+      BREAK
+    END
+  END
+  EXIT
 [END]
 EMBED %BeforeFileOpen
 [DEFINITION]
@@ -864,6 +922,29 @@ xml.Set_CurrentAction PROCEDURE(*STRING pAction)
   RETURN
 [END]
 [END]
+[END]
+EMBED %AfterFileOpen
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+!! Load settings
+settings.Load()
+stationList &= settings.GetStationQueue()
+[END]
+EMBED %BeforeWindowClosing
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 2300
+PROPERTY:END
+!! Save settings to disk
+settings.Save()
+IF settings.InError()
+  MESSAGE('Error writing settings to disk. Error ['&settings.InError()&'] ' &|
+    settings.GetError(),'Error',ICON:Exclamation)
+END
 [END]
 [END]
 [ADDITION]
@@ -2128,11 +2209,12 @@ PostXML
 Window  WINDOW('Water'),AT(,,395,224),FONT('MS Sans Serif',8),GRAY
           BUTTON('Get Districts'),AT(17,8),USE(?Dist:Button),#ORDINAL(1)
           BUTTON('Get Stations'),AT(17,31),USE(?Stations:Button),#ORDINAL(2)
-          BUTTON('Get Variables'),AT(17,78),USE(?Variables:Button),#ORDINAL(3)
-          BUTTON('Get Data'),AT(17,102),USE(?Data:Button),#ORDINAL(4)
-          PROMPT('Station Abbr:'),AT(19,58),USE(?loc:StationAbbrev:Prompt),#ORDINAL(5)
+          PROMPT('Station Abbr:'),AT(19,58),USE(?loc:StationAbbrev:Prompt),#ORDINAL(3)
           ENTRY(@s20),AT(69,57,88,10),USE(loc:StationAbbrev),UPR,MSG('Station abbreviation'), |
-            TIP('Station abbreviation'),#ORDINAL(6)
+            TIP('Station abbreviation'),#ORDINAL(4)
+          BUTTON('Add'),AT(162,55,45),USE(?Add:Button),#ORDINAL(5)
+          BUTTON('Get Variables'),AT(17,78),USE(?Variables:Button),#ORDINAL(6)
+          BUTTON('Get Data'),AT(17,102),USE(?Data:Button),#ORDINAL(7)
         END
 
 [PROCEDURE]

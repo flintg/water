@@ -9,3 +9,5 @@ source/
 !*.apv
 !up_vcsettings.ini
 !CA_Roots.pem
+!Libsrc/
+!Libsrc/Win/
