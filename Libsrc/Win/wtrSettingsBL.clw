@@ -1,16 +1,22 @@
                                   MEMBER()
+                                  pragma('link(CLAWE.Lib)')
 !-----------------------------------------------------------------------
 ! Business Layor Class - wtrSettingsBL.clw
 !
 ! Source for water project settings class
 !
 ! This object is a generic object used to maintain a list of settings.
-! This is a configuration file and is stored as an XML file.
+! This is a configuration file and is stored as an XML file.!
+!
+! The following are added to the project:
+!   * CLAWE.Lib - CapeSoft WinEvent
 !-----------------------------------------------------------------------
   INCLUDE('wtrSettingsBL.inc'),ONCE
   INCLUDE('xFiles.inc'), ONCE
+  INCLUDE('EventEqu.clw'), ONCE
   
   MAP
+    INCLUDE('EventMap.clw'), ONCE
   END
 !! -----------------------------------------------------------------------
 !!! <summary>Allocate dynamic memory needed for class</summary>
@@ -18,7 +24,7 @@
 wtrSettingsBL.Construct           PROCEDURE()
   CODE
   SELF.stationQ      &= NEW(wtrStationQueue)
-  SELF.ProfileDir     = STANDARD_PROFILE
+  SELF.ProfileDir     = ds_GetFolderPath(WE::CSIDL_APPDATA)
   SELF.DataDir        = SELF.ProfileDir & STANDARD_DATADIR
   
 !! -----------------------------------------------------------------------
@@ -57,14 +63,6 @@ xml             xFileXML
 curStationsFile CSTRING(256)
   CODE
   curStationsFile = SELF.DataDir&'\Stations.xml'
-  IF NOT EXISTS(curStationsFile)
-    CREATE(curStationsFile)
-    IF ERRORCODE()
-      SELF.ErrCode  = ERRORCODE()
-      SELF.Err      = ERROR()
-      RETURN SELF.ErrCode
-    END
-  END
   SELF.ErrCode    = xml.Save(SELF.stationQ,curStationsFile,'SavedStations','Station')
   SELF.Err        = xml.ErrorStr
   RETURN SELF.ErrCode
