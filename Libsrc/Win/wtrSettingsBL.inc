@@ -19,7 +19,6 @@ StationName             CSTRING(256),NAME('StationName')
 !-----------------------------------------------------------------------
 ! Source constants
 !-----------------------------------------------------------------------
-STANDARD_PROFILE      EQUATE('%APPDATA%')
 STANDARD_DATADIR      EQUATE('\N0FHG\Water')
 !-----------------------------------------------------------------------
 ! Class specification

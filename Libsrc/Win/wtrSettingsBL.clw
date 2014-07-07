@@ -57,6 +57,7 @@ xml             xFileXML
 !!! <summary>Save current project settings</summary>
 !!! <remarks>File paths are currently hard-coded. This should be changed
 !!! to use equates, instead.</remarks>
+!!! <returns>Error code encountered during save. 0 = No error.</returns>
 !! -----------------------------------------------------------------------
 wtrSettingsBL.Save                PROCEDURE()
 xml             xFileXML
@@ -69,6 +70,7 @@ curStationsFile CSTRING(256)
   
 !! -----------------------------------------------------------------------
 !!! <summary>Check for an error condition</summary>
+!!! <returns>Current error code</returns>
 !! -----------------------------------------------------------------------
 wtrSettingsBL.InError             PROCEDURE()!,LONG
   CODE
@@ -76,6 +78,7 @@ wtrSettingsBL.InError             PROCEDURE()!,LONG
   
 !! -----------------------------------------------------------------------
 !!! <summary>Return error text</summary>
+!!! <returns>Current error text</returns>
 !! -----------------------------------------------------------------------
 wtrSettingsBL.GetError            PROCEDURE()!,STRING
   CODE
