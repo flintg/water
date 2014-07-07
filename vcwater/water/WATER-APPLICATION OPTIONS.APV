@@ -1114,8 +1114,8 @@ WHEN  (181) ('EndsWith {14}Procedure (String pStr,Long pCase=True),Long,Virtual'
 %dClassVersion DEFAULT  ('77988')
 [PERSIST]
 %GenerationCompleted DEPEND %Module DEFAULT TIMES 2
+WHEN  ('Main_water.clw') ('1')
 WHEN  ('water.clw') ('1')
-WHEN  ('water001.clw') ('1')
 
 %LastTarget32 DEFAULT  ('1')
 %LastProgramExtension DEFAULT  ('EXE')
@@ -1125,8 +1125,8 @@ WHEN  ('water001.clw') ('1')
 -- NAMESPACE water
 #system win32 exe
 #model clarion dll
-#pragma define(_wtrDllMode_=>0)
 #pragma define(_wtrLinkMode_=>1)
+#pragma define(_wtrDllMode_=>0)
 #pragma define(xFilesLinkMode=>1) -- GENERATED
 #pragma define(xFilesDllMode=>0) -- GENERATED
 #pragma define(NETTALKLOG=>1) -- GENERATED
@@ -1140,7 +1140,7 @@ WHEN  ('water001.clw') ('1')
 #pragma define(_NetTalkDllMode_=>0) -- GENERATED
 #pragma define(_NetTalkLinkMode_=>1) -- GENERATED
 #compile "water.clw" -- GENERATED
-#compile "water001.clw" -- GENERATED
+#compile "Main_water.clw" -- GENERATED
 #compile "water_RD.CLW" -- GENERATED
 #compile "water_RU.CLW" -- GENERATED
 #compile "water_SF.CLW" -- GENERATED
