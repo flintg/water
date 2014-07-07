@@ -2209,12 +2209,12 @@ PostXML
 Window  WINDOW('Water'),AT(,,395,224),FONT('MS Sans Serif',8),GRAY
           BUTTON('Get Districts'),AT(17,8),USE(?Dist:Button),#ORDINAL(1)
           BUTTON('Get Stations'),AT(17,31),USE(?Stations:Button),#ORDINAL(2)
-          PROMPT('Station Abbr:'),AT(19,58),USE(?loc:StationAbbrev:Prompt),#ORDINAL(3)
+          PROMPT('Station Abbr:'),AT(19,58),USE(?loc:StationAbbrev:Prompt),#ORDINAL(5)
           ENTRY(@s20),AT(69,57,88,10),USE(loc:StationAbbrev),UPR,MSG('Station abbreviation'), |
-            TIP('Station abbreviation'),#ORDINAL(4)
-          BUTTON('Add'),AT(162,55,45),USE(?Add:Button),#ORDINAL(5)
-          BUTTON('Get Variables'),AT(17,78),USE(?Variables:Button),#ORDINAL(6)
-          BUTTON('Get Data'),AT(17,102),USE(?Data:Button),#ORDINAL(7)
+            TIP('Station abbreviation'),#ORDINAL(6)
+          BUTTON('Add'),AT(162,55,45),USE(?Add:Button),#ORDINAL(10000)
+          BUTTON('Get Variables'),AT(17,78),USE(?Variables:Button),#ORDINAL(3)
+          BUTTON('Get Data'),AT(17,102),USE(?Data:Button),#ORDINAL(4)
         END
 
 [PROCEDURE]
