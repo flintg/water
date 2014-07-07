@@ -9,12 +9,17 @@
 !-----------------------------------------------------------------------
   INCLUDE('wtrSettingsBL.inc'),ONCE
   INCLUDE('xFiles.inc'), ONCE
+  
+  MAP
+  END
 !! -----------------------------------------------------------------------
 !!! <summary>Allocate dynamic memory needed for class</summary>
 !! -----------------------------------------------------------------------
 wtrSettingsBL.Construct           PROCEDURE()
   CODE
   SELF.stationQ      &= NEW(wtrStationQueue)
+  SELF.ProfileDir     = STANDARD_PROFILE
+  SELF.DataDir        = SELF.ProfileDir & STANDARD_DATADIR
   
 !! -----------------------------------------------------------------------
 !!! <summary>Deallocate dynamic memory when class goes out of scope</summary>
@@ -40,7 +45,7 @@ wtrSettingsBL.GetStationQueue     PROCEDURE()
 wtrSettingsBL.Load                PROCEDURE()
 xml             xFileXML
   CODE
-  xml.Load(SELF.stationQ,'.\Stations.xml','SavedStations','Station')
+  xml.Load(SELF.stationQ,SELF.DataDir&'\Stations.xml','SavedStations','Station')
   
 !! -----------------------------------------------------------------------
 !!! <summary>Save current project settings</summary>
@@ -49,8 +54,19 @@ xml             xFileXML
 !! -----------------------------------------------------------------------
 wtrSettingsBL.Save                PROCEDURE()
 xml             xFileXML
+curStationsFile CSTRING(256)
   CODE
-  SELF.ErrCode = xml.Save(SELF.stationQ,'.\Stations.xml','SavedStations','Station')
+  curStationsFile = SELF.DataDir&'\Stations.xml'
+  IF NOT EXISTS(curStationsFile)
+    CREATE(curStationsFile)
+    IF ERRORCODE()
+      SELF.ErrCode  = ERRORCODE()
+      SELF.Err      = ERROR()
+      RETURN SELF.ErrCode
+    END
+  END
+  SELF.ErrCode    = xml.Save(SELF.stationQ,curStationsFile,'SavedStations','Station')
+  SELF.Err        = xml.ErrorStr
   RETURN SELF.ErrCode
   
 !! -----------------------------------------------------------------------

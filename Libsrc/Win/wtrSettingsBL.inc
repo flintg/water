@@ -19,7 +19,8 @@ StationName             CSTRING(256),NAME('StationName')
 !-----------------------------------------------------------------------
 ! Source constants
 !-----------------------------------------------------------------------
-
+STANDARD_PROFILE      EQUATE('%APPDATA%')
+STANDARD_DATADIR      EQUATE('\N0FHG\Water')
 !-----------------------------------------------------------------------
 ! Class specification
 !-----------------------------------------------------------------------
@@ -34,8 +35,10 @@ wtrSettingsBL     CLASS,MODULE('wtrSettingsBL.clw'),TYPE,LINK('wtrSettingsBL.clw
 ! Private and protected properties
 !---------------------------------------
 stationQ            &wtrStationQueue,PROTECTED    ! Queue of saved stations
+DataDir             CSTRING(256),PROTECTED        ! Data directory
 ErrCode             LONG,PRIVATE                  ! Error code 
 Err                 CSTRING(256),PRIVATE          ! Error text
+ProfileDir          CSTRING(256),PROTECTED        ! User profile directory
 !-----------------------------------------------------------------------
 ! Virtual methods  - Derived for proper processing
 !-----------------------------------------------------------------------
